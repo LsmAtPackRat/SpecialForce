@@ -1,4 +1,5 @@
 # This is the Logger module.
+# 提供一个GUI日志分析器。
 
 import logging
 import sys
@@ -6,17 +7,28 @@ import os
 import time
 
 class Logger:
-	# 以下是一些Logger的类属性
- 	CRITICAL = 50
- 	ERROR = 40
+	'''
+	Logger类用于生成日志，并且可以分析日志。
+	'''
+
+	# 日志输出级别
+	CRITICAL = 50
+	ERROR = 40
 	WARNING = 30
 	INFO = 20
 	DEBUG = 10
 	NOTSET = 0
 
+	# 输出的目标
 	DEST_FILE = 100
 	DEST_TERM = 200
 	DEST_BOTH = 300
+
+	# 输出的消息分量
+	MSG_DATE = 1
+	MSG_FILENAME = 2
+	MSG_LINENO = 3
+	MSG_CONTENT = 4
 
 	logger_map = {}   # name-logger
     # -------------------------------------------------------
@@ -30,7 +42,11 @@ class Logger:
 		self.inner_logger.addHandler(self.stream_handler)
 		self.dest = Logger.DEST_TERM
 		# 存到类中的name-logger的字典里
-		Logger.logger_map[name] = self   
+		Logger.logger_map[name] = self
+
+		self.msg_format = ""  # 日志消息的格式字符串，默认是"time|filename|lineno|message"，提供方法设置这个格式
+		self.msg_format_seperator = "|"
+
 
 	@staticmethod
 	def get_logger(name):
@@ -39,6 +55,14 @@ class Logger:
 			logger = Logger(name)
 		return logger
 
+
+	# 设置log的输出格式
+	def set_msg_format(self, msg_elem_tuple, separator="|"):
+		msg_format = ""
+		for item in msg_elem_tuple:
+			msg_format += item + separator
+		self.msg_format = msg_format[:-1]
+		
 
 	# 设置输出级别
 	def set_level(self, level):
@@ -64,6 +88,9 @@ class Logger:
 
 	# 可以将msg包装成一个比较完整的log信息
 	def _get_log_str(self, msg):
+		# 根据msg_format的内容来
+		log_str = ""
+
 		log_str = str(time.asctime(time.localtime(time.time()))) + " - " + sys._getframe().f_back.f_back.f_code.co_filename + "[line: " + str(sys._getframe().f_back.f_back.f_lineno) +  "] - " + msg
 		return log_str
 
