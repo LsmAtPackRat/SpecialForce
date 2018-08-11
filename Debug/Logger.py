@@ -59,8 +59,8 @@ class Logger:
 	# 设置log的输出格式
 	def set_msg_format(self, msg_elem_tuple, separator="|"):
 		msg_format = ""
-		for item in msg_elem_tuple:
-			msg_format += item + separator
+		# 生成一个格式化字符串
+		
 		self.msg_format = msg_format[:-1]
 		
 
